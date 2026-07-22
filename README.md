@@ -2,10 +2,12 @@
 
 Personal Claude skills, versioned with git tags. Each skill lives in its own top-level folder and is released independently.
 
-**Status:** `scribe-mode` is live at `v1.0.0`, symlinked into Claude Code (`~/.claude/skills/scribe-mode` → `scribe-mode/`) and uploaded to claude.ai via Customize → Skills. See [`docs/decisions/2026-07-21-skill-repo-versioning.md`](docs/decisions/2026-07-21-skill-repo-versioning.md) for why the repo is structured this way, and [`CHANGES.md`](CHANGES.md) for the history.
+**Status:** `scribe-mode` and `document-work` are both released at `v1.0.0` and symlinked into Claude Code (`~/.claude/skills/<name>` → `<name>/`). Only `scribe-mode` has been uploaded to claude.ai so far. See [`docs/decisions/2026-07-21-skill-repo-versioning.md`](docs/decisions/2026-07-21-skill-repo-versioning.md) for why the repo is structured this way, and [`CHANGES.md`](CHANGES.md) for the history.
 
 ```
 scribe-mode/
+  SKILL.md
+document-work/
   SKILL.md
 ```
 
@@ -18,6 +20,7 @@ Clone the repo once, then symlink whichever skill(s) you want into `~/.claude/sk
 ```bash
 git clone https://github.com/GoodOLMC/llm-skills.git ~/skills/llm-skills
 ln -s ~/skills/llm-skills/scribe-mode ~/.claude/skills/scribe-mode
+ln -s ~/skills/llm-skills/document-work ~/.claude/skills/document-work
 ```
 
 To update: `git pull` inside the cloned repo — the symlink picks up changes immediately, no relinking needed. This tracks `main`, not a specific tagged release; if you want to pin to a known-good version instead, `git checkout <skill>-vX.Y.Z` before symlinking (or copy the folder instead of symlinking, and re-copy on update).
