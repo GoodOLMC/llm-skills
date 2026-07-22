@@ -1,5 +1,12 @@
 # Changes
 
+## 2026-07-21 — document-work v1.0.0 release, second skill added
+
+- What changed: Added `document-work/SKILL.md`, moved in unchanged from `~/.claude/skills/document-work` (which is now a symlink into this repo, same pattern as `scribe-mode`). Cut and verified `document-work-v1.0.0` — no changes needed to `.github/workflows/release.yml` or `scripts/release.sh`, confirming the multi-skill-repo design (tag name → skill name derivation) scales to a second skill as intended. This resolves the "to revisit if a second skill is added" note in the decision record.
+- Files/systems affected: This repo (`document-work/` folder, new release). Local machine: `~/.claude/skills/document-work` converted from a real directory to a symlink.
+- Dependencies added/removed: None.
+- Surprises for future maintainers: None — release process worked exactly as designed on the first try.
+
 ## 2026-07-21 — Initial repo scaffold, scribe-mode v1.0.0 release, Code symlink
 
 - What changed: Created the repo from scratch — `scribe-mode/SKILL.md` (moved in from an ad hoc local folder, content unchanged), `.github/workflows/release.yml` (tag-triggered ZIP build + GitHub Release), `scripts/release.sh` (tag+push helper with validation), `README.md` (install/update instructions for both Claude Code and claude.ai). Cut and verified the first release, `scribe-mode-v1.0.0` — confirmed the published ZIP has the correct single-top-level-folder structure claude.ai's uploader requires. Symlinked `~/.claude/skills/scribe-mode` → `~/Documents/LLM Skills/scribe-mode` so Claude Code runs the live repo copy.
