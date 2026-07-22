@@ -2,6 +2,8 @@
 
 Personal Claude skills, versioned with git tags. Each skill lives in its own top-level folder and is released independently.
 
+**Status:** `scribe-mode` is live at `v1.0.0`, symlinked into Claude Code (`~/.claude/skills/scribe-mode` → `scribe-mode/`) and uploaded to claude.ai via Customize → Skills. See [`docs/decisions/2026-07-21-skill-repo-versioning.md`](docs/decisions/2026-07-21-skill-repo-versioning.md) for why the repo is structured this way, and [`CHANGES.md`](CHANGES.md) for the history.
+
 ```
 scribe-mode/
   SKILL.md
