@@ -1,5 +1,12 @@
 # Changes
 
+## 2026-10-03 — document-work v1.1.1
+
+- What changed: Added a state-doc index. When state docs live in a folder, that folder's `INDEX.md` lists every project in Active and Done sections, each row with status, date, next step and a one-sentence summary. The index is updated whenever a state doc is created or changes status. It gives a cold agent an entry point that needs no project name or date, closing the gap where records were findable only by date (change log) or by name (state docs).
+- Files/systems affected: `document-work/SKILL.md` (layer table, Step 2 default, Step 3 Significant row, Step 4, new "Index Row" section), `README.md` status line.
+- Dependencies added/removed: None.
+- Surprises for future maintainers: The first application, building an index of 30 existing state docs in a knowledge-base repo, needed no extra rules. A doc with no status line gets `reference` plus its last-modified date.
+
 ## 2026-10-03 — document-work v1.1.0
 
 - What changed: Reworked `document-work/SKILL.md` after reviewing ~6 months of its output in a personal knowledge-base repo (90 change entries, 56 decision records, 30 state docs). Added: a "Where Context Lives" layer table (project docs = source of truth, persistent memory = 3-line pointer, plan ledger = input only); Step 1 evidence gathering from git/plans/tasks; a no-filesystem path (claude.ai → emit entries in chat); per-doc location resolution (project instructions → existing convention → `docs/` defaults, never `README.md`); an Investigation scope tier; decision records only when a real choice between named alternatives was made; an idempotency check (re-runs update today's entry in place); a privacy rule for committed/public docs; a final file report. Removed host-specific paths and skill names. Description rewritten as triggers only.

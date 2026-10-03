@@ -21,6 +21,7 @@ Each kind of context has exactly one home. Write each fact once, in its home.
 |-------|-------|--------------------|
 | Project docs (change log, decision records, state doc) | What changed, why, current state | **Source of truth** — this skill writes them |
 | Persistent memory (if the environment has one) | A pointer to the state doc; user preferences and feedback | Step 6 writes one pointer per project |
+| State-doc index (when state docs live in a folder) | One row per project: status + one-sentence summary | The cold-start entry point — no project name or date needed; Step 5 keeps it current |
 | Plan file / progress ledger | Live task-by-task progress during execution | Input to Step 1 — read it, don't copy it |
 | Chat summary | This session's wrap-up message | Ephemeral — Step 7 |
 
@@ -46,6 +47,7 @@ Use the first rule that applies, separately for each of the three docs:
    - Change log: `docs/CHANGES.md`
    - Decision records: `docs/decisions/YYYY-MM-DD-<topic>.md`
    - State doc: `docs/CONTEXT.md` — or `docs/context/<project>.md` when the repo holds several projects. Never `README.md`; that file is for humans.
+   - Index: `INDEX.md` in the state-doc folder. A single `CONTEXT.md` needs no index.
 5. **Still unclear:** ask *"Where should documentation for this work live?"* with 2–3 options based on what's observable.
 
 ## Step 3: Classify Scope
@@ -54,7 +56,7 @@ Use the first rule that applies, separately for each of the three docs:
 |-------|----------|---------|
 | Investigation | Diagnosis, research, exploration — no files changed | Change log entry, description suffixed "(investigation only)", recording findings |
 | Minor | Bug fix, config tweak, small refactor, single-note update | Change log entry |
-| Significant | New feature, system built, structural change, completed plan phase | Change log entry + state doc |
+| Significant | New feature, system built, structural change, completed plan phase | Change log entry + state doc + index row |
 
 **Threshold:** Would a new agent need more than 2 minutes to reconstruct why this was built this way? If yes → significant.
 
@@ -66,7 +68,7 @@ This skill can run more than once per session (a plan completes, then the branch
 
 - Change log entry dated today covering this work → update it in place.
 - Decision record already written today for this topic → update it in place.
-- State doc → always updated in place.
+- State doc and index row → always updated in place.
 
 ## Step 5: Write the Docs
 
@@ -108,6 +110,26 @@ Always reflects current state. A new agent reads this first.
 - Current status, including the next step
 - Key entry points / where to start
 - What to read next (links to decision records, relevant plans)
+
+### Index Row
+
+When state docs live in a folder, the folder's `INDEX.md` lists every one of them. Whenever a state doc is created or its status changes, update its row — and move it between sections when it crosses from active to done. Create the index if it doesn't exist.
+
+```
+# Project Index
+
+## Active
+| Project | Status | What it is |
+|---------|--------|------------|
+| [<name>](<file>.md) | <in progress / paused / blocked / planned> YYYY-MM-DD — <next step> | <one sentence> |
+
+## Done
+| Project | Status | What it is |
+|---------|--------|------------|
+| [<name>](<file>.md) | <shipped / superseded / reference> YYYY-MM-DD | <one sentence> |
+```
+
+Rows sort alphabetically within each section.
 
 ## Step 6: Refresh the Memory Pointer
 
