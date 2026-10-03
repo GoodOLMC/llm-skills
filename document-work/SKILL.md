@@ -1,6 +1,6 @@
 ---
 name: document-work
-description: Automatic documentation at end of work sessions - captures decisions, changes, and current state for future agents. Invoked automatically per CLAUDE.md, or on demand ("wrap up", "invoke document-work").
+description: Use when a work session is ending — the user says "wrap up", "end the session", "document this", or "invoke document-work", or a plan, phase, or development branch has just finished — and a future agent starting cold will need the decisions, changes, and current state.
 ---
 
 # Document Work
@@ -13,61 +13,82 @@ Capture context for future agents at the end of work sessions.
 
 Primary audience: a future Claude instance starting cold — not a human skimming a polished doc. Format is dense, structured, and optimized for machine comprehension. No narrative fluff.
 
-## Step 1: Context Detection
+## Where Context Lives
 
-Determine where documentation should live before doing anything else:
+Each kind of context has exactly one home. Write each fact once, in its home.
 
-| Context | Doc Location |
-|---------|-------------|
-| Code project (git repo with source files) | In the repo — `docs/`, `.claude/context/`, or following existing project conventions |
-| Non-code project (KB work, planning, research, Obsidian) | `docs/superpowers/` using existing pattern, or within the project's own structure if one exists |
-| Ambiguous | Ask: *"Where should documentation for this work live?"* with 2–3 sensible options based on what's observable |
+| Layer | Holds | Role in this skill |
+|-------|-------|--------------------|
+| Project docs (change log, decision records, state doc) | What changed, why, current state | **Source of truth** — this skill writes them |
+| Persistent memory (if the environment has one) | A pointer to the state doc; user preferences and feedback | Step 6 writes one pointer per project |
+| Plan file / progress ledger | Live task-by-task progress during execution | Input to Step 1 — read it, don't copy it |
+| Chat summary | This session's wrap-up message | Ephemeral — Step 7 |
 
-## Step 2: Scope Judgment
+## Step 1: Gather What Happened
 
-Classify the work before producing any documents:
+Build the inventory from evidence, not recollection — long sessions lose detail to context summarization.
 
-**Minor** — bug fix, config tweak, small refactor, single-note KB update
-→ Append one entry to the Change Summary only. No other documents.
+- `git log` and `git diff --stat` since the session started (every repo touched, if any)
+- Plan files and progress ledgers touched this session
+- The session's task list, if one was kept
+- Decisions and surprises from the conversation
 
-**Significant** — new feature, architectural decision, system built from scratch, structural KB change, completed plan phase
-→ Produce all three documents (Step 3).
+If nothing changed, nothing was decided, and nothing was learned: say so and stop.
+
+## Step 2: Locate the Docs
+
+Use the first rule that applies, separately for each of the three docs:
+
+1. **No filesystem** (e.g. claude.ai chat): output the entries from Step 5 in the chat as one Markdown block for the user to save. Skip Steps 4 and 6.
+2. **Project instructions** (CLAUDE.md, AGENTS.md, etc.) name a location: use it.
+3. **An existing convention** is present (`CHANGES.md`, a `decisions/` folder, a context doc): follow it.
+4. **Otherwise** use these defaults:
+   - Change log: `docs/CHANGES.md`
+   - Decision records: `docs/decisions/YYYY-MM-DD-<topic>.md`
+   - State doc: `docs/CONTEXT.md` — or `docs/context/<project>.md` when the repo holds several projects. Never `README.md`; that file is for humans.
+5. **Still unclear:** ask *"Where should documentation for this work live?"* with 2–3 options based on what's observable.
+
+## Step 3: Classify Scope
+
+| Scope | Examples | Produce |
+|-------|----------|---------|
+| Investigation | Diagnosis, research, exploration — no files changed | Change log entry, description suffixed "(investigation only)", recording findings |
+| Minor | Bug fix, config tweak, small refactor, single-note update | Change log entry |
+| Significant | New feature, system built, structural change, completed plan phase | Change log entry + state doc |
 
 **Threshold:** Would a new agent need more than 2 minutes to reconstruct why this was built this way? If yes → significant.
 
-## Step 3: Produce Documents
+**Decision record — any scope:** write one only when a real choice between named alternatives was made this session. Execution progress, review findings, and task lists go in the change log entry.
 
-### For Minor Work Only
+## Step 4: Check for Existing Entries
 
-Append one entry to the Change Summary (create it if it doesn't exist):
+This skill can run more than once per session (a plan completes, then the branch finishes, then the user says "wrap up").
 
-**Location:**
-- Code: `CHANGES.md` or `docs/CHANGES.md`
-- Non-code: `docs/superpowers/CHANGES.md`
+- Change log entry dated today covering this work → update it in place.
+- Decision record already written today for this topic → update it in place.
+- State doc → always updated in place.
 
-**Entry format:**
+## Step 5: Write the Docs
+
+**Privacy:** these docs may be committed and pushed, and the repo may be public. Refer to private content (personal notes, contacts, customer data) by path or count. Write secrets and credentials as the name of the variable or file that holds them.
+
+### Change Log Entry
+
+Append-only running log, newest at the bottom unless the file's existing order says otherwise.
+
 ```
 ## YYYY-MM-DD — <brief description>
-- What changed: <summary>
+
+- What changed: <summary; include commit hashes>
 - Files/systems affected: <list>
-- Anything non-obvious: <if any>
+- Dependencies added/removed: <if any>
+- Surprises for future maintainers: <anything non-obvious>
 ```
 
-Done. Do not produce the other two documents for minor work.
+### Decision Record
 
----
+One file per decision. When a field (e.g. tradeoffs) wasn't discussed, ask the user rather than inferring it. A prior decision is never edited after its session; a reversal gets a new record that links the one it supersedes.
 
-### For Significant Work — Produce All Three
-
-#### Document 1: Decision Record
-
-Append-only. Add a new dated entry. Never overwrite prior entries.
-
-**Location:**
-- Code: `docs/decisions/YYYY-MM-DD-<topic>.md` or appended to `DECISIONS.md`
-- Non-code: `docs/superpowers/decisions/YYYY-MM-DD-<topic>.md`
-
-**Entry format:**
 ```
 ## YYYY-MM-DD — <topic>
 
@@ -76,42 +97,36 @@ Append-only. Add a new dated entry. Never overwrite prior entries.
 **Why this won:** <reasoning>
 **Tradeoffs accepted:** <what we gave up>
 **To revisit if:** <conditions that would change this decision>
+**Supersedes:** <link, if any>
 ```
 
-#### Document 2: Change Summary
+### State Doc
 
-Append-only running log. For non-code work: include what notes were created/modified, what structure changed, what conventions were established.
+Always reflects current state. A new agent reads this first.
 
-**Location:**
-- Code: `CHANGES.md` or `docs/CHANGES.md`
-- Non-code: `docs/superpowers/CHANGES.md`
-
-**Entry format:**
-```
-## YYYY-MM-DD — <brief description>
-
-- What changed: <summary>
-- Files/systems affected: <list>
-- Dependencies added/removed: <if any>
-- Surprises for future maintainers: <anything non-obvious>
-```
-
-#### Document 3: State/Usage Doc
-
-Updated in place if it exists; created fresh if it doesn't. Always reflects current state. A new agent reads this first.
-
-**Location:**
-- Code: `README.md` or `docs/CONTEXT.md`
-- Non-code: project-specific (e.g., `docs/superpowers/context/<project>.md`)
-
-**Contents:**
 - What this system/project is (one paragraph, current state)
-- Current status
+- Current status, including the next step
 - Key entry points / where to start
-- What to read next (links to decision record, relevant plans)
+- What to read next (links to decision records, relevant plans)
+
+## Step 6: Refresh the Memory Pointer
+
+If the environment has persistent memory (e.g. Claude Code auto-memory), keep one memory per project. Update the existing one rather than creating another. Do this only when a state doc exists for the project; otherwise skip this step. Before replacing an older, longer memory body, confirm its facts are in the project docs and move any that aren't. The memory body is exactly three lines:
+
+```
+Status: <shipped | in progress | paused | blocked> as of YYYY-MM-DD
+Next: <the single next action, or "none">
+Read: <path to the state doc>
+```
+
+Everything else about the project lives in the state doc.
+
+## Step 7: Report
+
+End with a list of every file created or updated, one line each: path, then what was added.
 
 ## What This Skill Is Not
 
 - Not a replacement for inline code comments
-- Not integrated into `kb-process-daily-note` (that skill has its own output conventions)
 - Not a changelog for package releases
+- Not a mid-task checkpoint — the plan file or progress ledger handles that

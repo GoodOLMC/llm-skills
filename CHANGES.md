@@ -1,5 +1,12 @@
 # Changes
 
+## 2026-10-03 — document-work v1.1.0
+
+- What changed: Reworked `document-work/SKILL.md` after reviewing ~6 months of its output in a personal knowledge-base repo (90 change entries, 56 decision records, 30 state docs). Added: a "Where Context Lives" layer table (project docs = source of truth, persistent memory = 3-line pointer, plan ledger = input only); Step 1 evidence gathering from git/plans/tasks; a no-filesystem path (claude.ai → emit entries in chat); per-doc location resolution (project instructions → existing convention → `docs/` defaults, never `README.md`); an Investigation scope tier; decision records only when a real choice between named alternatives was made; an idempotency check (re-runs update today's entry in place); a privacy rule for committed/public docs; a final file report. Removed host-specific paths and skill names. Description rewritten as triggers only.
+- Files/systems affected: `document-work/SKILL.md`, `README.md` status line, new `docs/decisions/2026-10-03-document-work-memory-pointer.md`.
+- Dependencies added/removed: None.
+- Surprises for future maintainers: (1) Verified by a fresh Sonnet paper test on 3 scenarios (second invocation in one session, claude.ai with no filesystem, investigation-only); it passed all of them and found 4 gaps (partial location config, pointer with no state doc, stale long memory bodies, invented decision fields), which were fixed before the release. (2) Host-specific locations (e.g. a vault's `docs/superpowers/`) now belong in that host's CLAUDE.md, because Step 2 checks project instructions first.
+
 ## 2026-07-21 — document-work v1.0.0 release, second skill added
 
 - What changed: Added `document-work/SKILL.md`, moved in unchanged from `~/.claude/skills/document-work` (which is now a symlink into this repo, same pattern as `scribe-mode`). Cut and verified `document-work-v1.0.0` — no changes needed to `.github/workflows/release.yml` or `scripts/release.sh`, confirming the multi-skill-repo design (tag name → skill name derivation) scales to a second skill as intended. This resolves the "to revisit if a second skill is added" note in the decision record.

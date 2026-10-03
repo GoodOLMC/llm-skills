@@ -2,7 +2,7 @@
 
 Personal Claude skills, versioned with git tags. Each skill lives in its own top-level folder and is released independently.
 
-**Status:** `scribe-mode` and `document-work` are both released at `v1.0.0` and symlinked into Claude Code (`~/.claude/skills/<name>` → `<name>/`). Only `scribe-mode` has been uploaded to claude.ai so far. See [`docs/decisions/2026-07-21-skill-repo-versioning.md`](docs/decisions/2026-07-21-skill-repo-versioning.md) for why the repo is structured this way, and [`CHANGES.md`](CHANGES.md) for the history.
+**Status:** `scribe-mode` is released at `v1.0.0` and `document-work` at `v1.1.0`, both and symlinked into Claude Code (`~/.claude/skills/<name>` → `<name>/`). Only `scribe-mode` has been uploaded to claude.ai so far. See [`docs/decisions/2026-07-21-skill-repo-versioning.md`](docs/decisions/2026-07-21-skill-repo-versioning.md) for why the repo is structured this way, and [`CHANGES.md`](CHANGES.md) for the history.
 
 ```
 scribe-mode/
